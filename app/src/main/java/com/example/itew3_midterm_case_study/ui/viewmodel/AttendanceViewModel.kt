@@ -41,6 +41,29 @@ class AttendanceViewModel(private val repository: AttendanceRepository) : ViewMo
 
         return AttendanceStats(present, absent, late, total, percentage)
     }
+
+    suspend fun calculateAttendanceStatsByDateRange(
+        studentId: Int,
+        startDate: String,
+        endDate: String
+    ): AttendanceStats {
+        val attendanceList = repository.getAttendanceByDateRange(studentId, startDate, endDate)
+        val present = attendanceList.count { it.status == "Present" }
+        val absent = attendanceList.count { it.status == "Absent" }
+        val late = attendanceList.count { it.status == "Late" }
+        val total = attendanceList.size
+        val percentage = if (total > 0) ((present + late).toFloat() / total * 100) else 0f
+
+        return AttendanceStats(present, absent, late, total, percentage)
+    }
+
+    suspend fun getAttendanceByDateRange(
+        studentId: Int,
+        startDate: String,
+        endDate: String
+    ): List<AttendanceEntity> {
+        return repository.getAttendanceByDateRange(studentId, startDate, endDate)
+    }
 }
 
 data class AttendanceStats(

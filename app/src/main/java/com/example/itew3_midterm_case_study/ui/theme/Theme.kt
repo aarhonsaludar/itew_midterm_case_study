@@ -10,21 +10,44 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = androidx.compose.ui.graphics.Color(0xFF90CAF9),
-    secondary = androidx.compose.ui.graphics.Color(0xFFCE93D8),
-    tertiary = androidx.compose.ui.graphics.Color(0xFFA5D6A7)
+    primary = DarkCoralPink,
+    secondary = DarkMediumPink,
+    tertiary = DarkPink,
+    background = DarkCream,
+    surface = DarkPink,
+    surfaceVariant = DarkMediumPink,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFFE8E8E8),
+    onSurface = Color(0xFFE8E8E8),
+    primaryContainer = DarkMediumPink,
+    onPrimaryContainer = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = androidx.compose.ui.graphics.Color(0xFF1976D2),
-    secondary = androidx.compose.ui.graphics.Color(0xFF9C27B0),
-    tertiary = androidx.compose.ui.graphics.Color(0xFF388E3C)
+    primary = CoralPink,
+    secondary = MediumPink,
+    tertiary = LightPink,
+    background = Cream,
+    surface = Color.White,
+    surfaceVariant = LightPink,
+    onPrimary = Color.White,
+    onSecondary = Color(0xFF5A4040),
+    onTertiary = Color(0xFF5A4040),
+    onBackground = Color(0xFF3A3530),
+    onSurface = Color(0xFF3A3530),
+    primaryContainer = LightPink,
+    onPrimaryContainer = Color(0xFF5A4040),
+    secondaryContainer = MediumPink,
+    onSecondaryContainer = Color.White,
+    outline = MediumPink
 )
 
 @Composable

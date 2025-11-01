@@ -94,7 +94,10 @@ fun StudentCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = androidx.compose.ui.graphics.Color(0xFFFFF5E4) // Cream
+        )
     ) {
         Row(
             modifier = Modifier
@@ -103,19 +106,62 @@ fun StudentCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = student.studentName,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = "ID: ${student.studentIdNumber}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // Student Name indicator
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(
+                        color = androidx.compose.ui.graphics.Color(0xFFFF9494), // CoralPink
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            text = "Student Name:",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = androidx.compose.ui.graphics.Color.White,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                    Text(
+                        text = student.studentName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = androidx.compose.ui.graphics.Color(0xFF3A3530)
+                    )
+                }
+
+                // Student ID indicator
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(
+                        color = androidx.compose.ui.graphics.Color(0xFFFFD1D1), // MediumPink
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            text = "Student ID:",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = androidx.compose.ui.graphics.Color(0xFF5A4040),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                    Text(
+                        text = student.studentIdNumber,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = androidx.compose.ui.graphics.Color(0xFF5A4040)
+                    )
+                }
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, "Delete", tint = MaterialTheme.colorScheme.error)
+                Icon(
+                    Icons.Default.Delete,
+                    "Delete",
+                    tint = androidx.compose.ui.graphics.Color(0xFFFF5252)
+                )
             }
         }
     }

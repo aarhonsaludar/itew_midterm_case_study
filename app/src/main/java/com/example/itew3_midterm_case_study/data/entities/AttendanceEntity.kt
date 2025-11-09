@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
 )
 data class AttendanceEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "date") val date: String, // Format: "yyyy-MM-dd"
+    @ColumnInfo(name = "date") val date: String,
     @ColumnInfo(name = "student_id") val studentId: Int,
-    @ColumnInfo(name = "status") val status: String // "Present", "Absent", "Late"
+    @ColumnInfo(name = "status") val status: String
 )

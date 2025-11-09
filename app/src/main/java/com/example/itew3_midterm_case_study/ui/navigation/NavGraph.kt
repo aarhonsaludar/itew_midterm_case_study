@@ -57,13 +57,10 @@ fun NavGraph(
             ClassListScreen(
                 viewModel = classViewModel,
                 onClassClick = { classId ->
-                    // Get class name and navigate
                     val className = classViewModel.allClasses.value.find { it.id == classId }?.className ?: ""
                     navController.navigate(Screen.StudentList.createRoute(classId, className))
                 },
                 onTakeAttendance = {
-                    // Show class selection for attendance
-                    // For simplicity, we'll navigate to first class if available
                     val firstClass = classViewModel.allClasses.value.firstOrNull()
                     firstClass?.let {
                         navController.navigate(Screen.AttendanceMarking.createRoute(it.id, it.className))

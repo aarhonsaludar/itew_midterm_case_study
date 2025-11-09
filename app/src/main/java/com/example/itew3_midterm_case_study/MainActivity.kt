@@ -24,13 +24,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AndroidThreeTen.init(this)
 
-        // Initialize database and repositories
         val database = AttendanceDatabase.getDatabase(applicationContext)
         val classRepository = ClassRepository(database.classDao())
         val studentRepository = StudentRepository(database.studentDao())
         val attendanceRepository = AttendanceRepository(database.attendanceDao())
 
-        // Initialize ViewModels
         val classViewModel = ClassViewModel(classRepository)
         val studentViewModel = StudentViewModel(studentRepository)
         val attendanceViewModel = AttendanceViewModel(attendanceRepository)

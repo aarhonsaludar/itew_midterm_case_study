@@ -1,5 +1,11 @@
 package com.example.itew3_midterm_case_study.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -58,7 +64,12 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Attendance Tracker") },
+                title = {
+                    Text(
+                        "Attendance Tracker",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -80,7 +91,8 @@ fun HomeScreen(
                 colors = CardDefaults.cardColors(
                     containerColor = Color(0xFFFF9494) // CoralPink
                 ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                shape = MaterialTheme.shapes.large
             ) {
                 Column(
                     modifier = Modifier
@@ -136,7 +148,7 @@ fun HomeScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Book,
-                                contentDescription = null,
+                                contentDescription = "Course code icon",
                                 tint = Color.White,
                                 modifier = Modifier.size(20.dp)
                             )
@@ -166,7 +178,7 @@ fun HomeScreen(
                     title = "Classes",
                     count = classes.size,
                     icon = Icons.Default.Class,
-                    color = Color(0xFFFF9494),
+                    color = Color(0xFFFF9494), // CoralPink
                     modifier = Modifier.weight(1f)
                 )
 
@@ -174,7 +186,7 @@ fun HomeScreen(
                     title = "Students",
                     count = totalStudents,
                     icon = Icons.Default.People,
-                    color = Color(0xFFFF9494),
+                    color = Color(0xFFFF9494), // CoralPink - Fixed UI consistency
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -258,13 +270,18 @@ fun HomeScreen(
                 }
             }
 
-            // Info message if no classes
-            if (classes.isEmpty()) {
+            // Info message if no classes with animation
+            AnimatedVisibility(
+                visible = classes.isEmpty(),
+                enter = expandVertically(animationSpec = tween(300)) + fadeIn(),
+                exit = shrinkVertically(animationSpec = tween(300)) + fadeOut()
+            ) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer
-                    )
+                    ),
+                    shape = MaterialTheme.shapes.medium
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
@@ -273,7 +290,7 @@ fun HomeScreen(
                     ) {
                         Icon(
                             Icons.Default.Info,
-                            contentDescription = null,
+                            contentDescription = "Information icon",
                             tint = MaterialTheme.colorScheme.onSecondaryContainer
                         )
                         Text(
@@ -320,7 +337,8 @@ fun StatisticCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
             containerColor = color
-        )
+        ),
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
             modifier = Modifier
@@ -331,7 +349,7 @@ fun StatisticCard(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = "$title icon",
                 tint = Color.White,
                 modifier = Modifier.size(40.dp)
             )
@@ -356,10 +374,11 @@ fun QuickActionCard(action: QuickAction, modifier: Modifier = Modifier) {
         modifier = modifier
             .aspectRatio(1f)
             .clickable(onClick = action.onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = action.color
-        )
+        ),
+        shape = MaterialTheme.shapes.large
     ) {
         Column(
             modifier = Modifier
@@ -370,7 +389,7 @@ fun QuickActionCard(action: QuickAction, modifier: Modifier = Modifier) {
         ) {
             Icon(
                 imageVector = action.icon,
-                contentDescription = null,
+                contentDescription = "${action.title} icon",
                 tint = Color(0xFF5A4040), // Darker color for contrast
                 modifier = Modifier.size(48.dp)
             )
@@ -393,7 +412,12 @@ fun ClassSelectionDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Select a Class") },
+        title = {
+            Text(
+                "Select a Class",
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -404,7 +428,8 @@ fun ClassSelectionDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { onClassSelected(classEntity) },
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                        shape = MaterialTheme.shapes.medium
                     ) {
                         Column(
                             modifier = Modifier
@@ -431,6 +456,8 @@ fun ClassSelectionDialog(
             TextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
-        }
+        },
+        shape = MaterialTheme.shapes.large
     )
 }
+

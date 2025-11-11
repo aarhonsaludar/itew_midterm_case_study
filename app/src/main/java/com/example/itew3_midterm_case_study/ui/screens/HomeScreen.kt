@@ -29,6 +29,7 @@ import com.example.itew3_midterm_case_study.ui.viewmodel.ClassViewModel
 import com.example.itew3_midterm_case_study.ui.viewmodel.StudentViewModel
 import kotlinx.coroutines.flow.firstOrNull
 
+// data class representing a quick action button on the home screen
 data class QuickAction(
     val title: String,
     val icon: ImageVector,
@@ -36,6 +37,7 @@ data class QuickAction(
     val onClick: () -> Unit
 )
 
+// main home screen displaying statistics and quick actions
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -51,7 +53,7 @@ fun HomeScreen(
     var showClassSelectionDialog by remember { mutableStateOf(false) }
     var selectedAction by remember { mutableStateOf<String?>(null) }
 
-    // Calculate total students
+    // calculate total students across all classes
     LaunchedEffect(classes) {
         var count = 0
         classes.forEach { classEntity ->
@@ -85,7 +87,7 @@ fun HomeScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Welcome Message Section
+            // welcome message section with logo
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -163,13 +165,14 @@ fun HomeScreen(
                 }
             }
 
-            // Quick Statistics Section
+            // quick statistics section header
             Text(
                 text = "Quick Statistics",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
 
+            // display class and student count statistics
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -191,13 +194,14 @@ fun HomeScreen(
                 )
             }
 
-            // Quick Actions Section
+            // quick actions section header
             Text(
                 text = "Quick Actions",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
 
+            // build list of available quick actions based on available classes
             val quickActions = remember(classes) {
                 buildList {
                     add(
@@ -246,7 +250,7 @@ fun HomeScreen(
                 }
             }
 
-            // Quick Actions Grid (using Column instead of LazyVerticalGrid)
+            // display quick actions in a grid layout
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -270,7 +274,7 @@ fun HomeScreen(
                 }
             }
 
-            // Info message if no classes with animation
+            // show info message when no classes exist
             AnimatedVisibility(
                 visible = classes.isEmpty(),
                 enter = expandVertically(animationSpec = tween(300)) + fadeIn(),
@@ -304,7 +308,7 @@ fun HomeScreen(
         }
     }
 
-    // Class Selection Dialog
+    // dialog for selecting a class before navigating to students or attendance
     if (showClassSelectionDialog) {
         ClassSelectionDialog(
             classes = classes,
@@ -460,4 +464,3 @@ fun ClassSelectionDialog(
         shape = MaterialTheme.shapes.large
     )
 }
-

@@ -11,21 +11,27 @@ import com.example.itew3_midterm_case_study.ui.viewmodel.AttendanceViewModel
 import com.example.itew3_midterm_case_study.ui.viewmodel.ClassViewModel
 import com.example.itew3_midterm_case_study.ui.viewmodel.StudentViewModel
 
+// sealed class defining all navigation routes in the app
 sealed class Screen(val route: String) {
     object Home : Screen("home")
     object ClassList : Screen("class_list")
+    // student list screen requires classId and className as parameters
     object StudentList : Screen("student_list/{classId}/{className}") {
         fun createRoute(classId: Int, className: String) = "student_list/$classId/$className"
     }
+    // attendance marking screen requires classId and className
     object AttendanceMarking : Screen("attendance_marking/{classId}/{className}") {
         fun createRoute(classId: Int, className: String) = "attendance_marking/$classId/$className"
     }
+    // individual class reports screen
     object Reports : Screen("reports/{classId}/{className}") {
         fun createRoute(classId: Int, className: String) = "reports/$classId/$className"
     }
+    // overall reports across all classes
     object OverallReports : Screen("overall_reports")
 }
 
+// main navigation graph managing all app screens and transitions
 @Composable
 fun NavGraph(
     navController: NavHostController,
@@ -34,6 +40,7 @@ fun NavGraph(
     attendanceViewModel: AttendanceViewModel
 ) {
     NavHost(navController = navController, startDestination = Screen.Home.route) {
+        // home screen - starting point of the app
         composable(Screen.Home.route) {
             HomeScreen(
                 classViewModel = classViewModel,
@@ -53,6 +60,7 @@ fun NavGraph(
             )
         }
 
+        // class list screen for managing classes
         composable(Screen.ClassList.route) {
             ClassListScreen(
                 viewModel = classViewModel,
@@ -69,6 +77,7 @@ fun NavGraph(
             )
         }
 
+        // student list screen with navigation arguments
         composable(
             route = Screen.StudentList.route,
             arguments = listOf(
@@ -76,6 +85,7 @@ fun NavGraph(
                 navArgument("className") { type = NavType.StringType }
             )
         ) { backStackEntry ->
+            // extract classId and className from navigation arguments
             val classId = backStackEntry.arguments?.getInt("classId") ?: 0
             val className = backStackEntry.arguments?.getString("className") ?: ""
 
@@ -90,6 +100,7 @@ fun NavGraph(
             )
         }
 
+        // attendance marking screen with navigation arguments
         composable(
             route = Screen.AttendanceMarking.route,
             arguments = listOf(
@@ -109,6 +120,7 @@ fun NavGraph(
             )
         }
 
+        // individual class reports screen
         composable(
             route = Screen.Reports.route,
             arguments = listOf(
@@ -128,6 +140,7 @@ fun NavGraph(
             )
         }
 
+        // overall reports screen showing all classes
         composable(Screen.OverallReports.route) {
             OverallReportsScreen(
                 classViewModel = classViewModel,

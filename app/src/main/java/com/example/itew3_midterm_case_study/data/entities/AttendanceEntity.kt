@@ -5,6 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
+// database entity representing an attendance record
+// uses foreign key to link attendance to student, cascade delete when student is removed
 @Entity(
     tableName = "attendance",
     foreignKeys = [ForeignKey(
@@ -15,8 +17,8 @@ import androidx.room.PrimaryKey
     )]
 )
 data class AttendanceEntity(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "date") val date: String,
-    @ColumnInfo(name = "student_id") val studentId: Int,
-    @ColumnInfo(name = "status") val status: String
+    @PrimaryKey(autoGenerate = true) val id: Int = 0, // unique identifier for the attendance record
+    @ColumnInfo(name = "date") val date: String, // date of attendance in ISO format (yyyy-MM-dd)
+    @ColumnInfo(name = "student_id") val studentId: Int, // reference to the student
+    @ColumnInfo(name = "status") val status: String // attendance status: Present, Absent, Late, or Excused
 )

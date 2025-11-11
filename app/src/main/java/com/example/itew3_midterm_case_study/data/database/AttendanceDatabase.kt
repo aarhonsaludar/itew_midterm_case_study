@@ -11,20 +11,25 @@ import com.example.itew3_midterm_case_study.data.entities.AttendanceEntity
 import com.example.itew3_midterm_case_study.data.entities.ClassEntity
 import com.example.itew3_midterm_case_study.data.entities.StudentEntity
 
+// room database configuration with all entities and DAOs
 @Database(
     entities = [ClassEntity::class, StudentEntity::class, AttendanceEntity::class],
     version = 1,
     exportSchema = false
 )
 abstract class AttendanceDatabase : RoomDatabase() {
+    // provide access to class data operations
     abstract fun classDao(): ClassDao
+    // provide access to student data operations
     abstract fun studentDao(): StudentDao
+    // provide access to attendance data operations
     abstract fun attendanceDao(): AttendanceDao
 
     companion object {
         @Volatile
         private var INSTANCE: AttendanceDatabase? = null
 
+        // singleton pattern to ensure only one database instance exists
         fun getDatabase(context: Context): AttendanceDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(

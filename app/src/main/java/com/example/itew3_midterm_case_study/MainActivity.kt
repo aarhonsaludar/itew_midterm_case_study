@@ -19,16 +19,20 @@ import com.example.itew3_midterm_case_study.ui.viewmodel.ClassViewModel
 import com.example.itew3_midterm_case_study.ui.viewmodel.StudentViewModel
 import com.jakewharton.threetenabp.AndroidThreeTen
 
+// main entry point of the attendance tracking application
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // initialize date/time library for proper date handling
         AndroidThreeTen.init(this)
 
+        // set up database and repository instances
         val database = AttendanceDatabase.getDatabase(applicationContext)
         val classRepository = ClassRepository(database.classDao())
         val studentRepository = StudentRepository(database.studentDao())
         val attendanceRepository = AttendanceRepository(database.attendanceDao())
 
+        // create viewmodels that manage UI state and business logic
         val classViewModel = ClassViewModel(classRepository)
         val studentViewModel = StudentViewModel(studentRepository)
         val attendanceViewModel = AttendanceViewModel(attendanceRepository)
@@ -39,6 +43,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    // set up navigation controller for screen navigation
                     val navController = rememberNavController()
                     NavGraph(
                         navController = navController,

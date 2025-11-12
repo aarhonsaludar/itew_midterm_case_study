@@ -30,6 +30,8 @@ fun ClassListScreen(
 ) {
     val classes by viewModel.allClasses.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var classToEdit by remember { mutableStateOf<ClassEntity?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
@@ -114,7 +116,11 @@ fun ClassListScreen(
                         ClassCard(
                             classEntity = classEntity,
                             onClick = { onClassClick(classEntity.id) },
-                            onDelete = { viewModel.deleteClass(classEntity) }
+                            onDelete = { viewModel.deleteClass(classEntity) },
+                            onEdit = {
+                                classToEdit = it
+                                showEditDialog = true
+                            }
                         )
                     }
                 }
@@ -131,13 +137,29 @@ fun ClassListScreen(
             }
         )
     }
+
+    if (showEditDialog && classToEdit != null) {
+        EditClassDialog(
+            classEntity = classToEdit!!,
+            onDismiss = {
+                showEditDialog = false
+                classToEdit = null
+            },
+            onConfirm = { updatedClass ->
+                viewModel.updateClass(updatedClass)
+                showEditDialog = false
+                classToEdit = null
+            }
+        )
+    }
 }
 
 @Composable
 fun ClassCard(
     classEntity: ClassEntity,
     onClick: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onEdit: (ClassEntity) -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -209,12 +231,21 @@ fun ClassCard(
                     )
                 }
             }
-            IconButton(onClick = { showDeleteDialog = true }) {
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Delete class",
-                    tint = androidx.compose.ui.graphics.Color(0xFFFF5252)
-                )
+            Row {
+                IconButton(onClick = { onEdit(classEntity) }) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "Edit class",
+                        tint = androidx.compose.ui.graphics.Color(0xFF4CAF50)
+                    )
+                }
+                IconButton(onClick = { showDeleteDialog = true }) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete class",
+                        tint = androidx.compose.ui.graphics.Color(0xFFFF5252)
+                    )
+                }
             }
         }
     }
@@ -335,6 +366,95 @@ fun AddClassDialog(
                 }
             ) {
                 Text("Add")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+        shape = MaterialTheme.shapes.large
+    )
+}
+
+@Composable
+fun EditClassDialog(
+    classEntity: ClassEntity,
+    onDismiss: () -> Unit,
+    onConfirm: (ClassEntity) -> Unit
+) {
+    var className by remember { mutableStateOf(classEntity.className) }
+    var subjectName by remember { mutableStateOf(classEntity.subjectName) }
+    var error by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = {
+            Icon(
+                Icons.Default.Edit,
+                contentDescription = "Edit class icon"
+            )
+        },
+        title = {
+            Text(
+                "Edit Class",
+                style = MaterialTheme.typography.titleLarge
+            )
+        },
+        text = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedTextField(
+                    value = className,
+                    onValueChange = {
+                        className = it
+                        error = ""
+                    },
+                    label = { Text("Section Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = error.isNotEmpty() && className.isBlank(),
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium
+                )
+                OutlinedTextField(
+                    value = subjectName,
+                    onValueChange = {
+                        subjectName = it
+                        error = ""
+                    },
+                    label = { Text("Course Subject") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = error.isNotEmpty() && subjectName.isBlank(),
+                    singleLine = true,
+                    shape = MaterialTheme.shapes.medium
+                )
+                if (error.isNotEmpty()) {
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    when {
+                        className.isBlank() -> error = "Section name is required"
+                        subjectName.isBlank() -> error = "Course subject is required"
+                        else -> {
+                            val updatedClass = classEntity.copy(
+                                className = className.trim(),
+                                subjectName = subjectName.trim()
+                            )
+                            onConfirm(updatedClass)
+                        }
+                    }
+                }
+            ) {
+                Text("Save")
             }
         },
         dismissButton = {

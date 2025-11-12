@@ -26,6 +26,8 @@ fun StudentListScreen(
 ) {
     val students by viewModel.getStudentsByClass(classId).collectAsState(initial = emptyList())
     var showDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf(false) }
+    var studentToEdit by remember { mutableStateOf<StudentEntity?>(null) }
 
     Scaffold(
         topBar = {
@@ -59,7 +61,11 @@ fun StudentListScreen(
             items(students) { student ->
                 StudentCard(
                     student = student,
-                    onDelete = { viewModel.deleteStudent(student) }
+                    onDelete = { viewModel.deleteStudent(student) },
+                    onEdit = {
+                        studentToEdit = it
+                        showEditDialog = true
+                    }
                 )
             }
 
@@ -85,12 +91,25 @@ fun StudentListScreen(
             onDismiss = { showDialog = false }
         )
     }
+
+    if (showEditDialog && studentToEdit != null) {
+        EditStudentDialog(
+            student = studentToEdit!!,
+            classId = classId,
+            viewModel = viewModel,
+            onDismiss = {
+                showEditDialog = false
+                studentToEdit = null
+            }
+        )
+    }
 }
 
 @Composable
 fun StudentCard(
     student: StudentEntity,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onEdit: (StudentEntity) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -156,12 +175,21 @@ fun StudentCard(
                     )
                 }
             }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    Icons.Default.Delete,
-                    "Delete",
-                    tint = androidx.compose.ui.graphics.Color(0xFFFF5252)
-                )
+            Row {
+                IconButton(onClick = { onEdit(student) }) {
+                    Icon(
+                        Icons.Default.Edit,
+                        "Edit",
+                        tint = androidx.compose.ui.graphics.Color(0xFF4CAF50)
+                    )
+                }
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        Icons.Default.Delete,
+                        "Delete",
+                        tint = androidx.compose.ui.graphics.Color(0xFFFF5252)
+                    )
+                }
             }
         }
     }
@@ -232,3 +260,76 @@ fun AddStudentDialog(
         }
     )
 }
+
+@Composable
+fun EditStudentDialog(
+    student: StudentEntity,
+    classId: Int,
+    viewModel: StudentViewModel,
+    onDismiss: () -> Unit
+) {
+    var studentName by remember { mutableStateOf(student.studentName) }
+    var studentId by remember { mutableStateOf(student.studentIdNumber) }
+    var error by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Edit Student") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = studentName,
+                    onValueChange = { studentName = it },
+                    label = { Text("Student Name") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = studentId,
+                    onValueChange = { studentId = it },
+                    label = { Text("Student ID Number") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                if (error.isNotEmpty()) {
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                scope.launch {
+                    when {
+                        studentName.isBlank() -> error = "Student name is required"
+                        studentId.isBlank() -> error = "Student ID is required"
+                        studentId.trim() != student.studentIdNumber &&
+                        viewModel.checkStudentIdExists(studentId.trim(), classId) -> {
+                            error = "Student ID already exists in this class"
+                        }
+                        else -> {
+                            val updatedStudent = student.copy(
+                                studentName = studentName.trim(),
+                                studentIdNumber = studentId.trim()
+                            )
+                            viewModel.updateStudent(updatedStudent)
+                            onDismiss()
+                        }
+                    }
+                }
+            }) {
+                Text("Save")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+
